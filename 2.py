@@ -100,6 +100,8 @@ class Example(QWidget):
 
         #Список активных пуль
         self.bullets = []
+        self.life = []
+        self.game_over = 0
 
         # Создаем игровой цикл
         self.timer.start(33, self)
@@ -107,6 +109,7 @@ class Example(QWidget):
         # Создание карты
         self.map = []
         self.bricks = []
+        self.cant = []
         self.create_map()
 
 
@@ -146,10 +149,10 @@ class Example(QWidget):
                 elif self.map[i][j] == "X":
                     frist = "cant_lomatsa.png"
                     pixmap = QPixmap(frist)
-                    self.bricks.append(QLabel(self))
-                    self.bricks[-1].resize(64, 64)
-                    self.bricks[-1].setPixmap(pixmap)
-                    self.bricks[-1].move(j * 64, i * 64)
+                    self.cant.append(QLabel(self))
+                    self.cant[-1].resize(64, 64)
+                    self.cant[-1].setPixmap(pixmap)
+                    self.cant[-1].move(j * 64, i * 64)
 
 
 
@@ -181,18 +184,29 @@ class Example(QWidget):
             self.put2 = 1
 
         if event.key() == Qt.Key_Space:
-            if len(self.bullets) < 5:
-                # Регистрируем пулю
+                frist = "16x16bullet.png"
+                pixmap = QPixmap(frist)
+                self.bullets.append(QLabel(self))
+                self.bullets[-1].resize(16, 16)
+                self.bullets[-1].setPixmap(pixmap)
+                self.bullets[-1].show()
                 if self.move == "W":
-                    self.bullets.append([self.coords2.x() + 16, self.coords2.y() - 3, self.move, 0, 0])
+                    self.life.append([self.move, 0])
+                    self.bullets[-1].move(self.coords2.x() + 16,
+                                          self.coords2.y() - 3)
                 elif self.move == "A":
-                    self.bullets.append([self.coords2.x() - 3, self.coords2.y() + 16, self.move, 0, 0])
-                elif self.move == "S":
-                    self.bullets.append([self.coords2.x() + 16, self.coords2.y() + 48, self.move, 0, 0])
-                elif self.move == "D":
-                    self.bullets.append([self.coords2.x() + 48, self.coords2.y() + 16, self.move, 0, 0])
+                    self.life.append([self.move, 0])
+                    self.bullets[-1].move(self.coords2.x() - 3,
+                                          self.coords2.y() + 16)
 
-                self.register_bullet()
+                elif self.move == "S":
+                    self.life.append([self.move, 0])
+                    self.bullets[-1].move(self.coords2.x() + 16,
+                                          self.coords2.y() + 48)
+                elif self.move == "D":
+                    self.life.append([self.move, 0])
+                    self.bullets[-1].move(self.coords2.x() + 48,
+                                          self.coords2.y() + 16)
 
     def keyReleaseEvent(self, eventQKeyEvent):
         key = eventQKeyEvent.key()
@@ -220,33 +234,10 @@ class Example(QWidget):
             if self.used[i] == 0:
                 return i
 
-    def register_bullet(self):
-        no_use = self.find_no_use()
-        self.used[no_use] = 1
-        frist = "16x16bullet.png"
-        pixmap = QPixmap(frist)
-        self.bullets[len(self.bullets) - 1][4] = no_use
-
-        if no_use == 0:
-            self.bullet1.setPixmap(pixmap)
-            self.bullet1.move(self.bullets[len(self.bullets) - 1][0], self.bullets[len(self.bullets) - 1][1])
-        elif no_use == 1:
-            self.bullet2.setPixmap(pixmap)
-            self.bullet2.move(self.bullets[len(self.bullets) - 1][0], self.bullets[len(self.bullets) - 1][1])
-        elif no_use == 2:
-            self.bullet3.setPixmap(pixmap)
-            self.bullet3.move(self.bullets[len(self.bullets) - 1][0], self.bullets[len(self.bullets) - 1][1])
-        elif no_use == 3:
-            self.bullet4.setPixmap(pixmap)
-            self.bullet4.move(self.bullets[len(self.bullets) - 1][0], self.bullets[len(self.bullets) - 1][1])
-        elif no_use == 4:
-            self.bullet5.setPixmap(pixmap)
-            self.bullet5.move(self.bullets[len(self.bullets) - 1][0], self.bullets[len(self.bullets) - 1][1])
 
     def probitie(self, x, y):
         tank_x, tank_y = self.coords2.x(), self.coords2.y()
         tank2_x, tank2_y = self.coords.x(), self.coords.y()
-
         # Проверка на попадание пули
         if tank_x <= x <= tank_x + 48 and tank_y <= y <= tank_y + 48:
             return 1
@@ -255,155 +246,63 @@ class Example(QWidget):
         else:
             return False
 
-    def move_bullet(self, a):
+    def move_bullet(self, a, b):
         bullet = a
-        if bullet[2] == "W":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x(), self.bullet1.y() - 10)
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x(), self.bullet2.y() - 10)
-                a = self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x(), self.bullet3.y() - 10)
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x(), self.bullet4.y() - 10)
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x(), self.bullet5.y() - 10)
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
-        elif bullet[2] == "A":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x() - 10, self.bullet1.y())
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x() - 10, self.bullet2.y())
-                a = self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x() - 10, self.bullet3.y())
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x() - 10, self.bullet4.y())
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x() - 10, self.bullet5.y())
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
-        elif bullet[2] == "S":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x(), self.bullet1.y() + 10)
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x(), self.bullet2.y() + 10)
-                a =self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x(), self.bullet3.y() + 10)
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x(), self.bullet4.y() + 10)
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x(), self.bullet5.y() + 10)
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
-        elif bullet[2] == "D":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x() + 10, self.bullet1.y())
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x() + 10, self.bullet2.y())
-                a = self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x() + 10, self.bullet3.y())
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x() + 10, self.bullet4.y())
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x() + 10, self.bullet5.y())
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
-        if bullet[2] == "Up":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x(), self.bullet1.y() - 10)
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x(), self.bullet2.y() - 10)
-                a = self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x(), self.bullet3.y() - 10)
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x(), self.bullet4.y() - 10)
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x(), self.bullet5.y() - 10)
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
-        elif bullet[2] == "Left":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x() - 10, self.bullet1.y())
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x() - 10, self.bullet2.y())
-                a = self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x() - 10, self.bullet3.y())
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x() - 10, self.bullet4.y())
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x() - 10, self.bullet5.y())
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
-        elif bullet[2] == "Down":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x(), self.bullet1.y() + 10)
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x(), self.bullet2.y() + 10)
-                a = self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x(), self.bullet3.y() + 10)
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x(), self.bullet4.y() + 10)
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x(), self.bullet5.y() + 10)
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
-        elif bullet[2] == "Right":
-            if bullet[4] == 0:
-                self.bullet1.move(self.bullet1.x() + 10, self.bullet1.y())
-                a = self.probitie(self.bullet1.x(), self.bullet1.y())
-            elif bullet[4] == 1:
-                self.bullet2.move(self.bullet2.x() + 10, self.bullet2.y())
-                a = self.probitie(self.bullet2.x(), self.bullet2.y())
-            elif bullet[4] == 2:
-                self.bullet3.move(self.bullet3.x() + 10, self.bullet3.y())
-                a = self.probitie(self.bullet3.x(), self.bullet3.y())
-            elif bullet[4] == 3:
-                self.bullet4.move(self.bullet4.x() + 10, self.bullet4.y())
-                a = self.probitie(self.bullet4.x(), self.bullet4.y())
-            elif bullet[4] == 4:
-                self.bullet5.move(self.bullet5.x() + 10, self.bullet5.y())
-                a = self.probitie(self.bullet5.x(), self.bullet5.y())
+        c = (bullet.x(), bullet.y())
+        life = b
+        if life[0] == "W":
+            bullet.move(bullet.x(), bullet.y() - 10)
+            a = self.probitie(bullet.x(), bullet.y())
+        elif life[0] == "A":
+            bullet.move(bullet.x() - 10, bullet.y())
+            a = self.probitie(bullet.x(), bullet.y())
+        elif life[0] == "S":
+            bullet.move(bullet.x(), bullet.y() + 10)
+            a = self.probitie(bullet.x(), bullet.y())
+        elif life[0] == "D":
+            bullet.move(bullet.x() + 10, bullet.y())
+            a = self.probitie(bullet.x(), bullet.y())
+        if life[0] == "Up":
+            bullet.move(bullet.x(), bullet.y() - 10)
+            a = self.probitie(bullet.x(), bullet.y())
+        elif life[0] == "Left":
+            bullet.move(bullet.x() - 10, bullet.y())
+            a = self.probitie(bullet.x(), bullet.y())
+        elif life[0] == "Down":
+            bullet.move(bullet.x(), bullet.y() + 10)
+            a = self.probitie(bullet.x(), bullet.y())
+        elif life[0] == "Right":
+            bullet.move(bullet.x() + 10, bullet.y())
+            a = self.probitie(bullet.x(), bullet.y())
         if a is not False:
             self.timer.stop()
             print("Конец игры!")
+            self.game_over = 1
 
     def mousePressEvent(self, event):
-        if len(self.bullets) < 5:
-            # Регистрируем пулю
+            frist = "16x16bullet.png"
+            pixmap = QPixmap(frist)
+            self.bullets.append(QLabel(self))
+            self.bullets[-1].resize(16, 16)
+            self.bullets[-1].setPixmap(pixmap)
+            self.bullets[-1].show()
             if self.move2 == "Up":
-                self.bullets.append([self.coords.x() + 16, self.coords.y() - 3, self.move2, 0, 0])
+                self.life.append([ self.move2, 0])
+                self.bullets[-1].move(self.coords.x() + 16,
+                                        self.coords.y() - 3)
             elif self.move2 == "Left":
-                self.bullets.append([self.coords.x() - 3, self.coords.y() + 16, self.move2, 0, 0])
-            elif self.move2 == "Down":
-                self.bullets.append([self.coords.x() + 16, self.coords.y() + 48, self.move2, 0, 0])
-            elif self.move2 == "Right":
-                self.bullets.append([self.coords.x() + 48, self.coords.y() + 16, self.move2, 0, 0])
+                self.life.append([ self.move2, 0])
+                self.bullets[-1].move(self.coords.x() - 3,
+                                        self.coords.y() + 16)
 
-            self.register_bullet()
+            elif self.move2 == "Down":
+                self.life.append([ self.move2, 0 ])
+                self.bullets[-1].move(self.coords.x() + 16,
+                                        self.coords.y() + 48)
+            elif self.move2 == "Right":
+                self.life.append([ self.move2, 0 ])
+                self.bullets[-1].move(self.coords.x() + 48,
+                                        self.coords.y() + 16)
 
     def timerEvent(self, e):
         # Движение танка
@@ -486,48 +385,22 @@ class Example(QWidget):
 
         # Обработка пуль
         new_bullet = []
+        new_life = []
         if self.bullets != []:
             for i in range(len(self.bullets)):
-                self.move_bullet(self.bullets[i])
-                self.bullets[i][3] += 1
+                self.move_bullet(self.bullets[i], self.life[i])
+                self.life[i][1] += 1
                 # Удаление пули
-                if self.bullets[i][3] < 100:
-                    if self.bullets[i][4] == 0:
-                        if self.bullet1.x() < -16 or self.bullet1.x() > 640 or self.bullet1.y() > 660 or\
-                                self.bullet1.y() < -16:
-                            self.used[self.bullets[i][4]] = 0
-                        else:
-                            new_bullet.append(self.bullets[i])
-                    if self.bullets[i][4] == 1:
-                        if self.bullet2.x() < -16 or self.bullet2.x() > 640 or self.bullet2.y() > 660 or\
-                                self.bullet2.y() < -16:
-                            self.used[self.bullets[i][4]] = 0
-                        else:
-                            new_bullet.append(self.bullets[i])
-                    if self.bullets[i][4] == 2:
-                        if self.bullet3.x() < -16 or self.bullet3.x() > 640 or self.bullet3.y() > 660 or\
-                                self.bullet3.y() < -16:
-                            self.used[self.bullets[i][4]] = 0
-                        else:
-                            new_bullet.append(self.bullets[i])
-                    if self.bullets[i][4] == 3:
-                        if self.bullet4.x() < -16 or self.bullet4.x() > 640 or self.bullet4.y() > 660 or\
-                                self.bullet4.y() < -16:
-                            self.used[self.bullets[i][4]] = 0
-                        else:
-                            new_bullet.append(self.bullets[i])
-                    if self.bullets[i][4] == 4:
-                        if self.bullet5.x() < -16 or self.bullet5.x() > 640 or self.bullet5.y() > 660 or\
-                                self.bullet5.y() < -16:
-                            self.used[self.bullets[i][4]] = 0
-                        else:
-                            new_bullet.append(self.bullets[i])
-                else:
-                    self.used[self.bullets[i][4]] = 0
+                if self.life[i][1] < 100:
+                    if self.bullets[i].x() < - 16 or self.bullets[i].x() > 640 or self.bullets[i].y() > 660 or self.bullets[i].y() < -16:
+                        pass
+                    else:
+                        new_bullet.append(self.bullets[i])
+                        new_life.append(self.life[i])
 
 
             self.bullets = new_bullet
-
+            self.life = new_life
 
 
 
