@@ -4,25 +4,46 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 
-
-class Example(QWidget):
+class Main(QWidget):
     def __init__(self):
         super().__init__()
-        self.initUI()
+        # Инициализация игрового цикла
+        self.timer = QBasicTimer()
 
-    def initUI(self):
+        # Инициализация 2 танков
+        self.coords2 = QLabel(self)
+        self.coords = QLabel(self)
+
+        # Инициализая пуль + переменных танка
+        self.move = str()
+        self.move2 = str()
+        self.put = int()
+        self.put2 = int()
+        self.bullets = list()
+        self.life = list()
+        self.game_over = 0
+
+        # Инициализация карты
+        self.map = list()
+        self.bricks = list()
+        self.cant = list()
+        self.listv = list()
+
+        self.initui()
+
+    def initui(self):
         self.setGeometry(800, 400, 800, 800)
         self.setWindowTitle('8 BIT TANKS')
 
+        # Создание фона
         label = QLabel(self)
         pixmap = QPixmap('assets/background.jpg')
         label.setPixmap(pixmap)
 
-        # Optional, resize window to image size
+        # Размер экрана | Не регулировать, т.к карта 10x10 для 64x64!
         self.resize(640, 640)
-        self.timer = QBasicTimer()
 
-        # Создание танка
+        # Создание танка номер 1
         self.coords2 = QLabel(self)
         self.coords2.resize(48, 48)
         frist = "assets/64.png"
@@ -30,8 +51,7 @@ class Example(QWidget):
         self.coords2.setPixmap(pixmap)
         self.coords2.move(296, 590)
 
-        # Второй танк
-        # Создание танка
+        # Создание танка номер 2
         self.coords = QLabel(self)
         self.coords.resize(48, 48)
         frist = "assets/64_d.png"
@@ -42,7 +62,7 @@ class Example(QWidget):
         # Направление движения танка 1
         self.move = "W"
 
-        #Список активных пуль
+        # Инициализация жизни пулей
         self.bullets = []
         self.life = []
         self.game_over = 0
@@ -65,7 +85,6 @@ class Example(QWidget):
 
         # Активное нажатие танка 2
         self.put2 = 0
-
 
         self.show()
 
@@ -101,8 +120,6 @@ class Example(QWidget):
                     self.listv[-1].resize(64, 64)
                     self.listv[-1].setPixmap(pixmap)
                     self.listv[-1].move(j * 64, i * 64)
-
-
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_D:
@@ -156,27 +173,25 @@ class Example(QWidget):
                     self.bullets[-1].move(self.coords2.x() + 48,
                                           self.coords2.y() + 16)
 
-    def keyReleaseEvent(self, eventQKeyEvent):
-        key = eventQKeyEvent.key()
-        if key == Qt.Key_D and not eventQKeyEvent.isAutoRepeat() and self.move == "D":
+    def keyReleaseEvent(self, event):
+        key = event.key()
+        if key == Qt.Key_D and not event.isAutoRepeat() and self.move == "D":
             self.put = 0
-        if key == Qt.Key_A and not eventQKeyEvent.isAutoRepeat() and self.move == "A":
+        if key == Qt.Key_A and not event.isAutoRepeat() and self.move == "A":
             self.put = 0
-        if key == Qt.Key_S and not eventQKeyEvent.isAutoRepeat() and self.move == "S":
+        if key == Qt.Key_S and not event.isAutoRepeat() and self.move == "S":
             self.put = 0
-        if key == Qt.Key_W and not eventQKeyEvent.isAutoRepeat() and self.move == "W":
+        if key == Qt.Key_W and not event.isAutoRepeat() and self.move == "W":
             self.put = 0
 
-        if key == Qt.Key_Right and not eventQKeyEvent.isAutoRepeat() and self.move2 == "Right":
+        if key == Qt.Key_Right and not event.isAutoRepeat() and self.move2 == "Right":
             self.put2 = 0
-        if key == Qt.Key_Left and not eventQKeyEvent.isAutoRepeat() and self.move2 == "Left":
+        if key == Qt.Key_Left and not event.isAutoRepeat() and self.move2 == "Left":
             self.put2 = 0
-        if key == Qt.Key_Down and not eventQKeyEvent.isAutoRepeat() and self.move2 == "Down":
+        if key == Qt.Key_Down and not event.isAutoRepeat() and self.move2 == "Down":
             self.put2 = 0
-        if key == Qt.Key_Up and not eventQKeyEvent.isAutoRepeat() and self.move2 == "Up":
+        if key == Qt.Key_Up and not event.isAutoRepeat() and self.move2 == "Up":
             self.put2 = 0
-
-
 
     def probitie(self, x, y):
         tank_x, tank_y = self.coords2.x(), self.coords2.y()
@@ -191,7 +206,6 @@ class Example(QWidget):
 
     def move_bullet(self, a, b):
         bullet = a
-        c = (bullet.x(), bullet.y())
         life = b
         if life[0] == "W":
             bullet.move(bullet.x(), bullet.y() - 5)
@@ -234,31 +248,37 @@ class Example(QWidget):
             self.bullets[-1].setPixmap(pixmap)
             self.bullets[-1].show()
             if self.move2 == "Up":
-                self.life.append([ self.move2, 0])
-                self.bullets[-1].move(self.coords.x() + 16,
-                                        self.coords.y() - 3)
+                self.life.append([self.move2, 0])
+                a = self.coords.x() + 16
+                b = self.coords.y() - 3
+                self.bullets[-1].move(a, b)
             elif self.move2 == "Left":
-                self.life.append([ self.move2, 0])
-                self.bullets[-1].move(self.coords.x() - 3,
-                                        self.coords.y() + 16)
+                self.life.append([self.move2, 0])
+                a = self.coords.x() - 3
+                b = self.coords.y() + 16
+                self.bullets[-1].move(a, b)
 
             elif self.move2 == "Down":
-                self.life.append([ self.move2, 0 ])
-                self.bullets[-1].move(self.coords.x() + 16,
-                                        self.coords.y() + 48)
+                self.life.append([self.move2, 0])
+                a = self.coords.x() + 16
+                b = self.coords.y() + 48
+                self.bullets[-1].move(a, b)
             elif self.move2 == "Right":
-                self.life.append([ self.move2, 0 ])
-                self.bullets[-1].move(self.coords.x() + 48,
-                                        self.coords.y() + 16)
+                self.life.append([self.move2, 0])
+                a = self.coords.x() + 48
+                b = self.coords.y() + 16
+                self.bullets[-1].move(a, b)
 
     def check_move(self, x, y, c):
+        tank_x = 0
+        tank_y = 0
         if c == 1:
             tank_x, tank_y = self.coords2.x(), self.coords2.y()
         if c == 2:
             tank_x, tank_y = self.coords.x(), self.coords.y()
         if tank_x > x:
             return False
-        if tank_y < y and tank_y + 48 > y and abs(tank_x - x) < 52:
+        if abs(tank_y - y) < 48 and abs(tank_x - x) < 52:
             return 1
         elif tank_y < y + 64 and tank_y + 64 > y + 32 and abs(tank_x - x) < 52:
             return 2
@@ -266,13 +286,15 @@ class Example(QWidget):
             return False
 
     def check_move_2(self, x, y, c):
+        tank_x = 0
+        tank_y = 0
         if c == 1:
             tank_x, tank_y = self.coords2.x(), self.coords2.y()
         if c == 2:
             tank_x, tank_y = self.coords.x(), self.coords.y()
         if tank_x < x:
             return False
-        if tank_y < y and tank_y + 48 > y and abs(tank_x - 16 - x) < 52:
+        if abs(tank_y - y) < 48 and abs(tank_x - 16 - x) < 52:
             return 1
         elif tank_y < y + 64 and tank_y + 64 > y + 32 and abs(tank_x - 16 - x) < 52:
             return 2
@@ -280,39 +302,42 @@ class Example(QWidget):
             return False
 
     def check_move_3(self, x, y, c):
+        tank_x = 0
+        tank_y = 0
         if c == 1:
             tank_x, tank_y = self.coords2.x(), self.coords2.y()
         if c == 2:
             tank_x, tank_y = self.coords.x(), self.coords.y()
         if tank_y < y:
             return False
-        if tank_x < x and tank_x + 48 > x and abs(tank_y - 16 - y) < 51:
+        if abs(tank_x - x) < 48 and abs(tank_y - 16 - y) < 51:
             return 1
         elif tank_x < x + 64 and tank_x + 64 > x + 32 and abs(tank_y - 16 - y) < 51:
             return 2
-        elif tank_x < x and tank_x + 48 > x and abs(tank_y - y) < 65:
+        elif abs(tank_x - x) < 48 and abs(tank_y - y) < 65:
             return 3
         else:
             return False
 
     def check_move_4(self, x, y, c):
+        tank_x = 0
+        tank_y = 0
         if c == 1:
             tank_x, tank_y = self.coords2.x(), self.coords2.y()
         if c == 2:
             tank_x, tank_y = self.coords.x(), self.coords.y()
         if tank_y > y:
             return False
-        if tank_x < x and tank_x + 48 > x and abs(tank_y - y) < 51:
+        if abs(tank_x - x) < 48 and abs(tank_y - y) < 51:
             return 1
         elif tank_x < x + 64 and tank_x + 64 > x + 32 and abs(tank_y - y) < 51:
             return 2
-        elif tank_x < x and tank_x + 48 > x and abs(tank_y - y) < 50:
+        elif abs(tank_x - x) < 48 and abs(tank_y - y) < 50:
             return 3
         else:
             return False
 
     def check_brick(self, x, y):
-        new_brick = []
         for i in self.bricks:
             if i.x() <= x <= i.x() + 64 and i.y() <= y <= i.y() + 64:
                 i.move(-100, - 100)
@@ -564,13 +589,14 @@ class Example(QWidget):
         # Обработка пуль
         new_bullet = []
         new_life = []
-        if self.bullets != []:
+        if len(self.bullets) != 0:
             for i in range(len(self.bullets)):
                 self.move_bullet(self.bullets[i], self.life[i])
                 self.life[i][1] += 1
                 # Удаление пули
                 if self.life[i][1] < 150:
-                    if self.bullets[i].x() < - 16 or self.bullets[i].x() > 640 or self.bullets[i].y() > 660 or self.bullets[i].y() < -16:
+                    if self.bullets[i].x() < - 16 or self.bullets[i].x() > 640 \
+                            or self.bullets[i].y() > 660 or self.bullets[i].y() < -16:
                         pass
                     elif self.check_brick(self.bullets[i].x(), self.bullets[i].y()):
                         self.bullets[i].move(-100, - 100)
@@ -578,13 +604,11 @@ class Example(QWidget):
                         new_bullet.append(self.bullets[i])
                         new_life.append(self.life[i])
 
-
             self.bullets = new_bullet
             self.life = new_life
 
 
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
+    ex = Main()
     sys.exit(app.exec_())
