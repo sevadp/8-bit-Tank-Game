@@ -1,10 +1,10 @@
 XX      XX
-   XXXX   
-          
-  XXTTXX  
+Z  XXXX  Z
+Z        Z
+Z XXTTXX Z
 X X    X X
 X X    X X
-  XXTTXX  
-          
-   XXXX   
+Z XXTTXX Z
+Z        Z
+Z  XXXX  Z
 XX      XX

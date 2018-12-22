@@ -28,16 +28,16 @@ class Example(QWidget):
         frist = "assets/64.png"
         pixmap = QPixmap(frist)
         self.coords2.setPixmap(pixmap)
-        self.coords2.move(20, 430)
+        self.coords2.move(296, 590)
 
         # Второй танк
         # Создание танка
         self.coords = QLabel(self)
         self.coords.resize(48, 48)
-        frist = "assets/64.png"
+        frist = "assets/64_d.png"
         pixmap = QPixmap(frist)
         self.coords.setPixmap(pixmap)
-        self.coords.move(430, 430)
+        self.coords.move(296, 10)
 
         # Направление движения танка 1
         self.move = "W"
@@ -54,13 +54,14 @@ class Example(QWidget):
         self.map = []
         self.bricks = []
         self.cant = []
+        self.listv = []
         self.create_map()
 
         # Активное нажатие танка 1
         self.put = 0
 
         # Направление движения танка 2
-        self.move2 = "Up"
+        self.move2 = "Down"
 
         # Активное нажатие танка 2
         self.put2 = 0
@@ -93,6 +94,13 @@ class Example(QWidget):
                     self.cant[-1].resize(64, 64)
                     self.cant[-1].setPixmap(pixmap)
                     self.cant[-1].move(j * 64, i * 64)
+                elif self.map[i][j] == "Z":
+                    frist = "assets/listva.png"
+                    pixmap = QPixmap(frist)
+                    self.listv.append(QLabel(self))
+                    self.listv[-1].resize(64, 64)
+                    self.listv[-1].setPixmap(pixmap)
+                    self.listv[-1].move(j * 64, i * 64)
 
 
 
