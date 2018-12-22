@@ -89,12 +89,13 @@ class Main(QWidget):
         self.show()
 
     def create_map(self):
+        # Импорт карты из TXT
         with open("assets/map.txt") as D:
             a = D.read()
             a = a.split("\n")
             for i in a:
                 self.map.append(i)
-
+        # Создание карты, обработка данных
         for i in range(10):
             for j in range(10):
                 if self.map[i][j] == " ":
@@ -122,6 +123,9 @@ class Main(QWidget):
                     self.listv[-1].move(j * 64, i * 64)
 
     def keyPressEvent(self, event):
+        # Получение информации о нажатой клавиши.
+        # Выбор нужного направления
+
         if event.key() == Qt.Key_D:
             self.move = "D"
             self.put = 1
@@ -148,6 +152,7 @@ class Main(QWidget):
             self.move2 = "Down"
             self.put2 = 1
 
+        # Информация о начале выпуска пуль
         if event.key() == Qt.Key_Space:
                 frist = "assets/16x16bullet.png"
                 pixmap = QPixmap(frist)
@@ -174,6 +179,8 @@ class Main(QWidget):
                                           self.coords2.y() + 16)
 
     def keyReleaseEvent(self, event):
+        # Информация о отжатии клавиши, нужна,
+        # Чтобы перемещать танки без всяких задержек
         key = event.key()
         if key == Qt.Key_D and not event.isAutoRepeat() and self.move == "D":
             self.put = 0
@@ -194,6 +201,7 @@ class Main(QWidget):
             self.put2 = 0
 
     def probitie(self, x, y):
+        # Импорт данных о танках
         tank_x, tank_y = self.coords2.x(), self.coords2.y()
         tank2_x, tank2_y = self.coords.x(), self.coords.y()
         # Проверка на попадание пули
@@ -205,8 +213,11 @@ class Main(QWidget):
             return False
 
     def move_bullet(self, a, b):
+        # Функция о движении пуль.
         bullet = a
         life = b
+        # Импортируется направление пули, его корды.
+        # Далее пуля двигается и делается проверка на попадание
         if life[0] == "W":
             bullet.move(bullet.x(), bullet.y() - 5)
             a = self.probitie(bullet.x(), bullet.y())
@@ -241,6 +252,7 @@ class Main(QWidget):
             self.game_over = 1
 
     def mousePressEvent(self, event):
+            # Создание пули, которую выпускает игрок со Стрелочек
             frist = "assets/16x16bullet.png"
             pixmap = QPixmap(frist)
             self.bullets.append(QLabel(self))
@@ -270,6 +282,8 @@ class Main(QWidget):
                 self.bullets[-1].move(a, b)
 
     def check_move(self, x, y, c):
+        # Проверка возможности движения для танка против блоков.
+        # 4 стороны у блоков, свои функции
         tank_x = 0
         tank_y = 0
         if c == 1:
@@ -286,6 +300,8 @@ class Main(QWidget):
             return False
 
     def check_move_2(self, x, y, c):
+        # Проверка возможности движения для танка против блоков.
+        # 4 стороны у блоков, свои функции
         tank_x = 0
         tank_y = 0
         if c == 1:
@@ -302,6 +318,8 @@ class Main(QWidget):
             return False
 
     def check_move_3(self, x, y, c):
+        # Проверка возможности движения для танка против блоков.
+        # 4 стороны у блоков, свои функции
         tank_x = 0
         tank_y = 0
         if c == 1:
@@ -320,6 +338,8 @@ class Main(QWidget):
             return False
 
     def check_move_4(self, x, y, c):
+        # Проверка возможности движения для танка против блоков.
+        # 4 стороны у блоков, свои функции
         tank_x = 0
         tank_y = 0
         if c == 1:
@@ -338,9 +358,11 @@ class Main(QWidget):
             return False
 
     def check_brick(self, x, y):
+        # Проверка пули на врезание в блок. Если кирпич - удаление кирпича и пули
+        # Если Cant, то удаление пули.
         for i in self.bricks:
             if i.x() <= x <= i.x() + 64 and i.y() <= y <= i.y() + 64:
-                i.move(-100, - 100)
+                i.move(-600, - 600)
                 return True
 
         for i in self.cant:
@@ -355,6 +377,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.x()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a < 590:
                     can = 1
                     for i in self.bricks:
@@ -384,6 +408,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.x()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a > 2:
                     can = 1
                     for i in self.bricks:
@@ -413,6 +439,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.y()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a > 2:
                     can = 1
                     for i in self.bricks:
@@ -442,6 +470,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.y()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a < 590:
                     can = 1
                     for i in self.bricks:
@@ -474,6 +504,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords.setPixmap(pixmap)
                 a = self.coords.x()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a < 590:
                     can = 1
                     for i in self.bricks:
@@ -503,6 +535,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords.setPixmap(pixmap)
                 a = self.coords.x()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a > 2:
                     can = 1
                     for i in self.bricks:
@@ -532,6 +566,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords.setPixmap(pixmap)
                 a = self.coords.y()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a > 2:
                     can = 1
                     for i in self.bricks:
@@ -561,6 +597,8 @@ class Main(QWidget):
                 pixmap = QPixmap(frist)
                 self.coords.setPixmap(pixmap)
                 a = self.coords.y()
+                # Выравнивание танка с границей
+                # + проверка на движение
                 if a < 590:
                     can = 1
                     for i in self.bricks:
@@ -598,9 +636,12 @@ class Main(QWidget):
                     if self.bullets[i].x() < - 16 or self.bullets[i].x() > 640 \
                             or self.bullets[i].y() > 660 or self.bullets[i].y() < -16:
                         pass
+                    # Проверка, врезалась ли пуля в камень.
                     elif self.check_brick(self.bullets[i].x(), self.bullets[i].y()):
-                        self.bullets[i].move(-100, - 100)
+                        self.bullets[i].move(-600, - 600)
                     else:
+                        # Если пуля не за границей, и не врезалась в камень или танк. То пуля
+                        # Продолжает жить
                         new_bullet.append(self.bullets[i])
                         new_life.append(self.life[i])
 
@@ -609,6 +650,7 @@ class Main(QWidget):
 
 
 if __name__ == '__main__':
+    # Процесс запуска функции
     app = QApplication(sys.argv)
     ex = Main()
     sys.exit(app.exec_())
