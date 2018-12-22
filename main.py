@@ -219,7 +219,11 @@ class Example(QWidget):
             a = self.probitie(bullet.x(), bullet.y())
         if a is not False:
             self.timer.stop()
-            print("Конец игры!")
+            print("Конец игры! Победил", end="")
+            if life[0] in "WASD":
+                print(" игрок, который использует WASD для управления")
+            else:
+                print(" игрок, который использует Стрелочки для управления")
             self.game_over = 1
 
     def mousePressEvent(self, event):
