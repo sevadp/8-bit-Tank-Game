@@ -69,7 +69,7 @@ class Example(QWidget):
         self.show()
 
     def create_map(self):
-        with open("map.txt") as D:
+        with open("assets/map.txt") as D:
             a = D.read()
             a = a.split("\n")
             for i in a:
