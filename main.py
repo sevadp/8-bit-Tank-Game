@@ -11,7 +11,7 @@ class Example(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(300, 400, 300, 300)
+        self.setGeometry(800, 400, 800, 800)
         self.setWindowTitle('8 BIT TANKS')
 
         label = QLabel(self)
@@ -20,12 +20,8 @@ class Example(QWidget):
 
         # Optional, resize window to image size
         self.resize(640, 640)
-
-        # Кирпичики
-        frist = "assets/brick_comp.png"
-        pixmap = QPixmap(frist)
-
         self.timer = QBasicTimer()
+
         # Создание танка
         self.coords2 = QLabel(self)
         self.coords2.resize(48, 48)
@@ -43,9 +39,6 @@ class Example(QWidget):
         self.coords.setPixmap(pixmap)
         self.coords.move(430, 430)
 
-        # Максимум регистрируем 5 пуль
-        frist = "assets/16x16bullet.png"
-
         # Направление движения танка 1
         self.move = "W"
 
@@ -55,17 +48,13 @@ class Example(QWidget):
         self.game_over = 0
 
         # Создаем игровой цикл
-        self.timer.start(33, self)
+        self.timer.start(12, self)
 
         # Создание карты
         self.map = []
         self.bricks = []
         self.cant = []
         self.create_map()
-
-
-        # Пули, используются или нет
-        self.used = [0, 0, 0, 0, 0]
 
         # Активное нажатие танка 1
         self.put = 0
@@ -80,7 +69,7 @@ class Example(QWidget):
         self.show()
 
     def create_map(self):
-        with open("assets/map.txt") as D:
+        with open("map.txt") as D:
             a = D.read()
             a = a.split("\n")
             for i in a:
@@ -181,12 +170,6 @@ class Example(QWidget):
 
 
 
-    def find_no_use(self):
-        for i in range(len(self.used)):
-            if self.used[i] == 0:
-                return i
-
-
     def probitie(self, x, y):
         tank_x, tank_y = self.coords2.x(), self.coords2.y()
         tank2_x, tank2_y = self.coords.x(), self.coords.y()
@@ -203,28 +186,28 @@ class Example(QWidget):
         c = (bullet.x(), bullet.y())
         life = b
         if life[0] == "W":
-            bullet.move(bullet.x(), bullet.y() - 10)
+            bullet.move(bullet.x(), bullet.y() - 5)
             a = self.probitie(bullet.x(), bullet.y())
         elif life[0] == "A":
-            bullet.move(bullet.x() - 10, bullet.y())
+            bullet.move(bullet.x() - 5, bullet.y())
             a = self.probitie(bullet.x(), bullet.y())
         elif life[0] == "S":
-            bullet.move(bullet.x(), bullet.y() + 10)
+            bullet.move(bullet.x(), bullet.y() + 5)
             a = self.probitie(bullet.x(), bullet.y())
         elif life[0] == "D":
-            bullet.move(bullet.x() + 10, bullet.y())
+            bullet.move(bullet.x() + 5, bullet.y())
             a = self.probitie(bullet.x(), bullet.y())
         if life[0] == "Up":
-            bullet.move(bullet.x(), bullet.y() - 10)
+            bullet.move(bullet.x(), bullet.y() - 5)
             a = self.probitie(bullet.x(), bullet.y())
         elif life[0] == "Left":
-            bullet.move(bullet.x() - 10, bullet.y())
+            bullet.move(bullet.x() - 5, bullet.y())
             a = self.probitie(bullet.x(), bullet.y())
         elif life[0] == "Down":
-            bullet.move(bullet.x(), bullet.y() + 10)
+            bullet.move(bullet.x(), bullet.y() + 5)
             a = self.probitie(bullet.x(), bullet.y())
         elif life[0] == "Right":
-            bullet.move(bullet.x() + 10, bullet.y())
+            bullet.move(bullet.x() + 5, bullet.y())
             a = self.probitie(bullet.x(), bullet.y())
         if a is not False:
             self.timer.stop()
@@ -256,6 +239,77 @@ class Example(QWidget):
                 self.bullets[-1].move(self.coords.x() + 48,
                                         self.coords.y() + 16)
 
+    def check_move(self, x, y, c):
+        if c == 1:
+            tank_x, tank_y = self.coords2.x(), self.coords2.y()
+        if c == 2:
+            tank_x, tank_y = self.coords.x(), self.coords.y()
+        if tank_x > x:
+            return False
+        if tank_y < y and tank_y + 48 > y and abs(tank_x - x) < 52:
+            return 1
+        elif tank_y < y + 64 and tank_y + 64 > y + 32 and abs(tank_x - x) < 52:
+            return 2
+        else:
+            return False
+
+    def check_move_2(self, x, y, c):
+        if c == 1:
+            tank_x, tank_y = self.coords2.x(), self.coords2.y()
+        if c == 2:
+            tank_x, tank_y = self.coords.x(), self.coords.y()
+        if tank_x < x:
+            return False
+        if tank_y < y and tank_y + 48 > y and abs(tank_x - 16 - x) < 52:
+            return 1
+        elif tank_y < y + 64 and tank_y + 64 > y + 32 and abs(tank_x - 16 - x) < 52:
+            return 2
+        else:
+            return False
+
+    def check_move_3(self, x, y, c):
+        if c == 1:
+            tank_x, tank_y = self.coords2.x(), self.coords2.y()
+        if c == 2:
+            tank_x, tank_y = self.coords.x(), self.coords.y()
+        if tank_y < y:
+            return False
+        if tank_x < x and tank_x + 48 > x and abs(tank_y - 16 - y) < 51:
+            return 1
+        elif tank_x < x + 64 and tank_x + 64 > x + 32 and abs(tank_y - 16 - y) < 51:
+            return 2
+        elif tank_x < x and tank_x + 48 > x and abs(tank_y - y) < 65:
+            return 3
+        else:
+            return False
+
+    def check_move_4(self, x, y, c):
+        if c == 1:
+            tank_x, tank_y = self.coords2.x(), self.coords2.y()
+        if c == 2:
+            tank_x, tank_y = self.coords.x(), self.coords.y()
+        if tank_y > y:
+            return False
+        if tank_x < x and tank_x + 48 > x and abs(tank_y - y) < 51:
+            return 1
+        elif tank_x < x + 64 and tank_x + 64 > x + 32 and abs(tank_y - y) < 51:
+            return 2
+        elif tank_x < x and tank_x + 48 > x and abs(tank_y - y) < 50:
+            return 3
+        else:
+            return False
+
+    def check_brick(self, x, y):
+        new_brick = []
+        for i in self.bricks:
+            if i.x() <= x <= i.x() + 64 and i.y() <= y <= i.y() + 64:
+                i.move(-100, - 100)
+                return True
+
+        for i in self.cant:
+            if i.x() <= x <= i.x() + 64 and i.y() <= y <= i.y() + 64:
+                return True
+
     def timerEvent(self, e):
         # Движение танка
         if self.put == 1:
@@ -265,36 +319,116 @@ class Example(QWidget):
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.x()
                 if a < 590:
-                    self.coords2.move(a + 3, self.coords2.y())
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move(i.x() + 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move(i.x() + 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(a + 1, self.coords2.y())
                 elif 590 == a or a == 591:
-                    self.coords2.move(590, self.coords2.y())
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move(i.x() + 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move(i.x() + 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(590, self.coords2.y())
             elif self.move == "A":
                 frist = "assets/64_l.png"
                 pixmap = QPixmap(frist)
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.x()
                 if a > 2:
-                    self.coords2.move(a - 3, self.coords2.y())
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_2(i.x() - 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_2(i.x() - 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(a - 1, self.coords2.y())
                 elif 1 == a or a == 2:
-                    self.coords2.move(0, self.coords2.y())
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_2(i.x() - 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_2(i.x() - 1, i.y(), 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(0, self.coords2.y())
             elif self.move == "W":
                 frist = "assets/64.png"
                 pixmap = QPixmap(frist)
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.y()
                 if a > 2:
-                    self.coords2.move(self.coords2.x(), a - 3)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_3(i.x(), i.y() - 1, 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_3(i.x(), i.y() - 1, 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(self.coords2.x(), a - 1)
                 elif 1 == a or a == 2:
-                    self.coords2.move(self.coords2.x(), 0)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_3(i.x(), i.y() - 1, 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_3(i.x(), i.y() - 1, 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(self.coords2.x(), a - 1)
             elif self.move == "S":
                 frist = "assets/64_d.png"
                 pixmap = QPixmap(frist)
                 self.coords2.setPixmap(pixmap)
                 a = self.coords2.y()
                 if a < 590:
-                    self.coords2.move(self.coords2.x(), a + 3)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_4(i.x(), i.y() + 1, 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_4(i.x(), i.y() + 1, 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(self.coords2.x(), a + 1)
                 elif 590 == a or a == 591:
-                    self.coords2.move(self.coords2.x(), 592)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_4(i.x(), i.y() + 1, 1)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_4(i.x(), i.y() + 1, 1)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords2.move(self.coords2.x(), a + 1)
 
         # Второй танк. движение
         if self.put2 == 1:
@@ -304,36 +438,116 @@ class Example(QWidget):
                 self.coords.setPixmap(pixmap)
                 a = self.coords.x()
                 if a < 590:
-                    self.coords.move(a + 3, self.coords.y())
-                elif 590 == a or a == 590:
-                    self.coords.move(592, self.coords.y())
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move(i.x() + 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move(i.x() + 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(a + 1, self.coords.y())
+                elif 590 == a or a == 591:
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move(i.x() + 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move(i.x() + 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(590, self.coords.y())
             elif self.move2 == "Left":
                 frist = "assets/64_l.png"
                 pixmap = QPixmap(frist)
                 self.coords.setPixmap(pixmap)
                 a = self.coords.x()
                 if a > 2:
-                    self.coords.move(a - 3, self.coords.y())
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_2(i.x() - 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_2(i.x() - 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(a - 1, self.coords.y())
                 elif 1 == a or a == 2:
-                    self.coords.move(0, self.coords.y())
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_2(i.x() - 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_2(i.x() - 1, i.y(), 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(0, self.coords.y())
             elif self.move2 == "Up":
                 frist = "assets/64.png"
                 pixmap = QPixmap(frist)
                 self.coords.setPixmap(pixmap)
                 a = self.coords.y()
                 if a > 2:
-                    self.coords.move(self.coords.x(), a - 3)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_3(i.x(), i.y() - 1, 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_3(i.x(), i.y() - 1, 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(self.coords.x(), a - 1)
                 elif 1 == a or a == 2:
-                    self.coords.move(self.coords2.x(), 0)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_3(i.x(), i.y() - 1, 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_3(i.x(), i.y() - 1, 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(self.coords.x(), a - 1)
             elif self.move2 == "Down":
                 frist = "assets/64_d.png"
                 pixmap = QPixmap(frist)
                 self.coords.setPixmap(pixmap)
                 a = self.coords.y()
                 if a < 590:
-                    self.coords.move(self.coords.x(), a + 3)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_4(i.x(), i.y() + 1, 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_4(i.x(), i.y() + 1, 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(self.coords.x(), a + 1)
                 elif 590 == a or a == 591:
-                    self.coords.move(self.coords.x(), 592)
+                    can = 1
+                    for i in self.bricks:
+                        b = self.check_move_4(i.x(), i.y() + 1, 2)
+                        if b is not False:
+                            can = 0
+                    for i in self.cant:
+                        b = self.check_move_4(i.x(), i.y() + 1, 2)
+                        if b is not False:
+                            can = 0
+                    if can == 1:
+                        self.coords.move(self.coords.x(), a + 1)
 
         # Обработка пуль
         new_bullet = []
@@ -343,9 +557,11 @@ class Example(QWidget):
                 self.move_bullet(self.bullets[i], self.life[i])
                 self.life[i][1] += 1
                 # Удаление пули
-                if self.life[i][1] < 100:
+                if self.life[i][1] < 150:
                     if self.bullets[i].x() < - 16 or self.bullets[i].x() > 640 or self.bullets[i].y() > 660 or self.bullets[i].y() < -16:
                         pass
+                    elif self.check_brick(self.bullets[i].x(), self.bullets[i].y()):
+                        self.bullets[i].move(-100, - 100)
                     else:
                         new_bullet.append(self.bullets[i])
                         new_life.append(self.life[i])
@@ -353,6 +569,7 @@ class Example(QWidget):
 
             self.bullets = new_bullet
             self.life = new_life
+
 
 
 if __name__ == '__main__':
