@@ -369,6 +369,21 @@ class Main(QWidget):
             if i.x() <= x <= i.x() + 64 and i.y() <= y <= i.y() + 64:
                 return True
 
+    def check_tank(self, new_x, new_y, c):
+        # Проверка, есть ли перед тобой танк.
+        if c == 1:
+            tank_x, tank_y = new_x, new_y
+            tank_2x, tank_2y = self.coords.x(), self.coords.y()
+        else:
+            tank_2x, tank_2y = new_x, new_y
+            tank_x, tank_y = self.coords2.x(), self.coords2.y()
+
+        if (tank_2x <= tank_x <= tank_2x + 48 or tank_x <= tank_2x <= tank_x + 48) \
+                and (tank_y <= tank_2y <= tank_y + 48 or tank_2y <= tank_y <= tank_2y + 48):
+            return False
+        else:
+            return True
+
     def timerEvent(self, e):
         # Движение танка
         if self.put == 1:
@@ -379,30 +394,31 @@ class Main(QWidget):
                 a = self.coords2.x()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a < 590:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move(i.x() + 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move(i.x() + 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(a + 1, self.coords2.y())
-                elif 590 == a or a == 591:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move(i.x() + 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move(i.x() + 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(590, self.coords2.y())
+                if self.check_tank(a + 1, self.coords2.y(), 1):
+                    if a < 590:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move(i.x() + 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move(i.x() + 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(a + 1, self.coords2.y())
+                    elif 590 == a or a == 591:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move(i.x() + 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move(i.x() + 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(590, self.coords2.y())
             elif self.move == "A":
                 frist = "assets/64_l.png"
                 pixmap = QPixmap(frist)
@@ -410,30 +426,31 @@ class Main(QWidget):
                 a = self.coords2.x()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a > 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_2(i.x() - 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_2(i.x() - 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(a - 1, self.coords2.y())
-                elif 1 == a or a == 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_2(i.x() - 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_2(i.x() - 1, i.y(), 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(0, self.coords2.y())
+                if self.check_tank(a - 1, self.coords2.y(), 1):
+                    if a > 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_2(i.x() - 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_2(i.x() - 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(a - 1, self.coords2.y())
+                    elif 1 == a or a == 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_2(i.x() - 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_2(i.x() - 1, i.y(), 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(0, self.coords2.y())
             elif self.move == "W":
                 frist = "assets/64.png"
                 pixmap = QPixmap(frist)
@@ -441,30 +458,31 @@ class Main(QWidget):
                 a = self.coords2.y()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a > 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_3(i.x(), i.y() - 1, 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_3(i.x(), i.y() - 1, 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(self.coords2.x(), a - 1)
-                elif 1 == a or a == 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_3(i.x(), i.y() - 1, 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_3(i.x(), i.y() - 1, 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(self.coords2.x(), a - 1)
+                if self.check_tank(self.coords2.x(), a - 1, 1):
+                    if a > 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_3(i.x(), i.y() - 1, 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_3(i.x(), i.y() - 1, 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(self.coords2.x(), a - 1)
+                    elif 1 == a or a == 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_3(i.x(), i.y() - 1, 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_3(i.x(), i.y() - 1, 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(self.coords2.x(), a - 1)
             elif self.move == "S":
                 frist = "assets/64_d.png"
                 pixmap = QPixmap(frist)
@@ -472,30 +490,31 @@ class Main(QWidget):
                 a = self.coords2.y()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a < 590:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_4(i.x(), i.y() + 1, 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_4(i.x(), i.y() + 1, 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(self.coords2.x(), a + 1)
-                elif 590 == a or a == 591:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_4(i.x(), i.y() + 1, 1)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_4(i.x(), i.y() + 1, 1)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords2.move(self.coords2.x(), a + 1)
+                if self.check_tank(self.coords2.x(), a + 1, 1):
+                    if a < 590:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_4(i.x(), i.y() + 1, 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_4(i.x(), i.y() + 1, 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(self.coords2.x(), a + 1)
+                    elif 590 == a or a == 591:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_4(i.x(), i.y() + 1, 1)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_4(i.x(), i.y() + 1, 1)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords2.move(self.coords2.x(), a + 1)
 
         # Второй танк. движение
         if self.put2 == 1:
@@ -506,30 +525,31 @@ class Main(QWidget):
                 a = self.coords.x()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a < 590:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move(i.x() + 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move(i.x() + 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(a + 1, self.coords.y())
-                elif 590 == a or a == 591:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move(i.x() + 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move(i.x() + 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(590, self.coords.y())
+                if self.check_tank(self.coords.x() + 1, self.coords.y(), 2):
+                    if a < 590:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move(i.x() + 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move(i.x() + 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(a + 1, self.coords.y())
+                    elif 590 == a or a == 591:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move(i.x() + 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move(i.x() + 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(590, self.coords.y())
             elif self.move2 == "Left":
                 frist = "assets/64_l.png"
                 pixmap = QPixmap(frist)
@@ -537,30 +557,31 @@ class Main(QWidget):
                 a = self.coords.x()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a > 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_2(i.x() - 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_2(i.x() - 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(a - 1, self.coords.y())
-                elif 1 == a or a == 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_2(i.x() - 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_2(i.x() - 1, i.y(), 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(0, self.coords.y())
+                if self.check_tank(self.coords.x() - 1, self.coords.y(), 2):
+                    if a > 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_2(i.x() - 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_2(i.x() - 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(a - 1, self.coords.y())
+                    elif 1 == a or a == 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_2(i.x() - 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_2(i.x() - 1, i.y(), 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(0, self.coords.y())
             elif self.move2 == "Up":
                 frist = "assets/64.png"
                 pixmap = QPixmap(frist)
@@ -568,30 +589,31 @@ class Main(QWidget):
                 a = self.coords.y()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a > 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_3(i.x(), i.y() - 1, 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_3(i.x(), i.y() - 1, 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(self.coords.x(), a - 1)
-                elif 1 == a or a == 2:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_3(i.x(), i.y() - 1, 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_3(i.x(), i.y() - 1, 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(self.coords.x(), a - 1)
+                if self.check_tank(self.coords.x(), self.coords.y() - 1, 2):
+                    if a > 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_3(i.x(), i.y() - 1, 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_3(i.x(), i.y() - 1, 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(self.coords.x(), a - 1)
+                    elif 1 == a or a == 2:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_3(i.x(), i.y() - 1, 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_3(i.x(), i.y() - 1, 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(self.coords.x(), a - 1)
             elif self.move2 == "Down":
                 frist = "assets/64_d.png"
                 pixmap = QPixmap(frist)
@@ -599,30 +621,31 @@ class Main(QWidget):
                 a = self.coords.y()
                 # Выравнивание танка с границей
                 # + проверка на движение
-                if a < 590:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_4(i.x(), i.y() + 1, 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_4(i.x(), i.y() + 1, 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(self.coords.x(), a + 1)
-                elif 590 == a or a == 591:
-                    can = 1
-                    for i in self.bricks:
-                        b = self.check_move_4(i.x(), i.y() + 1, 2)
-                        if b is not False:
-                            can = 0
-                    for i in self.cant:
-                        b = self.check_move_4(i.x(), i.y() + 1, 2)
-                        if b is not False:
-                            can = 0
-                    if can == 1:
-                        self.coords.move(self.coords.x(), a + 1)
+                if self.check_tank(self.coords.x(), self.coords.y() + 1, 2):
+                    if a < 590:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_4(i.x(), i.y() + 1, 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_4(i.x(), i.y() + 1, 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(self.coords.x(), a + 1)
+                    elif 590 == a or a == 591:
+                        can = 1
+                        for i in self.bricks:
+                            b = self.check_move_4(i.x(), i.y() + 1, 2)
+                            if b is not False:
+                                can = 0
+                        for i in self.cant:
+                            b = self.check_move_4(i.x(), i.y() + 1, 2)
+                            if b is not False:
+                                can = 0
+                        if can == 1:
+                            self.coords.move(self.coords.x(), a + 1)
 
         # Обработка пуль
         new_bullet = []
